@@ -4,7 +4,7 @@ The web user interface for path planning recommendation in search and rescue mis
 # 12/29/2021
 Steps to do:
 1. Divide into grids (considered finished)
-  - Build the 3D view of web user interface
+  - Build the 3D view of web user interface (Try to add a 2D small map)
   - Divide the area based on the previous algorithm
   - Load heatmap models
 2. Send an UAV to a cell for coverage search
@@ -23,7 +23,8 @@ Steps to do:
   - Build user interface to setup user interaction for the next step, for example: next cell, height,
   - Link to the step 1
   - Organize the experiment flow: 2 task loop
-
+# Notes
+  - The z in 3D is the height above water level
 # 12/22/2021
 First draft:
 based on version 1 of study 1 and 2,
