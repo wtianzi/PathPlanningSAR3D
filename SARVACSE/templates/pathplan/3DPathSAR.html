@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <title>
+      3D map for study 3
+    </title>
+    <link rel="stylesheet" href="{% static '/css/pathplan.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.22/esri/themes/light/main.css" />
+    <script src="https://js.arcgis.com/4.22/"></script>
+    <style>
+      html,
+      body,
+      #viewDiv {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      #menu {
+        padding: 1em;
+      }
+
+      #menu > div {
+        padding: 0.4em;
+      }
+
+      select {
+        font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
+    </style>
+
+    <script src="{% static 'js/jquery-1.12.4.js' %}"></script>
+    <script type="text/javascript" src="{% static 'data/scenariosetup.json' %}"></script>
+
+    <script>
+      //ArcGIS API for JavaScript API Reference : https://developers.arcgis.com/javascript/latest/api-reference/esri-views-SceneView.html
+      require([
+      "esri/Map",
+      "esri/config",
+      "esri/widgets/Expand",
+      "esri/WebScene",
+      "esri/views/SceneView",
+      "esri/layers/GraphicsLayer",
+      "esri/widgets/Sketch/SketchViewModel",
+      "esri/widgets/Slider",
+      "esri/geometry/geometryEngine",
+      "esri/Graphic",
+      "esri/core/promiseUtils"], (
+      Map,
+      esriConfig,
+      Expand,
+      WebScene,
+      SceneView,
+      GraphicsLayer,
+      SketchViewModel,
+      Slider,
+      geometryEngine,
+      Graphic,
+      promiseUtils,
+      ) => {
+        // initialize 3D map view
+        esriConfig.apiKey = "AAPKe16eba93913249a69ece454d60c498bbTJBjBUN0FAWC3xKYJ9uhSf9CBiqbiAFOb0Ylly-bmHRlwuLuH-KEhBxQYaQ8U75e";
+        const map = new Map({
+          basemap: "arcgis-imagery",//"topo-vector","arcgis-topographic",
+          ground: "world-elevation"
+        });
+
+        const view = new SceneView({
+          container: "viewDiv",
+          map: map,
+          // camera: https://developers.arcgis.com/javascript/latest/api-reference/esri-Camera.html#heading
+          camera: {
+            position: {
+              x: -80.572567,
+              y: 37.18,
+              z: 2000 // meters
+            },//position: [4.84361, 45.75561, 270],
+            tilt: 45,
+            heading: 0//The compass heading of the camera in degrees. Heading is zero when north is the top of the screen. It increases as the view rotates clockwise. The angles are always normalized between 0 and 360 degrees.
+            //fov
+          },
+          //scale: 10,
+          //center: [-80.572567,37.203604]
+        });
+        //---------------------------
+        // right side bar
+        editArea = document.getElementById("editArea");
+        const editExpand = new Expand({
+            expandIconClass: "esri-icon-edit",
+            expandTooltip: "Expand Edit",
+            expanded: true,
+            view: view,
+            content: editArea
+        });
+        view.ui.add(editExpand, "top-right");
+        //--------------------------
+
+        var m_path; // have data of one path
+        var layer_path;
+
+        const colors = {
+          A: [255, 0, 16],
+          B: [0, 170, 227],
+          C: [248, 150, 29],
+          D: [0, 166, 63],
+          F1: [189, 239, 133],
+          F2: [189, 239, 133]
+        };
+
+        const graphicsLayer = new GraphicsLayer();
+        map.add(graphicsLayer);
+
+        function ShowPath(id=0){
+          t_path=m_path[id].path;
+          t_path1=[
+              [-80.572567,37.18, 0],
+              [-80.572567,37.18, 1000]
+            ]
+          console.log(t_path);
+          console.log(t_path1);
+          // 3D draw example: https://developers.arcgis.com/javascript/latest/sample-code/sandbox/?sample=graphics-basic-3d
+          const polyline = {
+            type: "polyline", // autocasts as new Polyline()
+            paths: t_path
+          //t_path.path //[[-80.572567,37.18,100],[x,y,z]...]
+          };
+
+          const lineSymbol = {
+            type: "simple-line", // autocasts as SimpleLineSymbol()
+            color: [226, 119, 40],
+            width: 14
+          };
+
+          // 3D path example: https://developers.arcgis.com/javascript/latest/sample-code/visualization-path-3d/
+          const wallSymbol = {
+            type: "line-3d",
+            symbolLayers: [{
+              type: "path",
+              profile: "quad",
+              material: {
+                color: [100, 100, 100]
+              },
+              width: 5, // the width in m
+              height: 30, // the height in m
+              anchor: "bottom", // the vertical anchor is set to the lowest point of the wall
+              profileRotation: "heading"
+            }]
+          };
+
+          const stripSymbol = {
+            type: "line-3d",
+            symbolLayers: [{
+              type: "path",
+              profile: "quad",
+              material: {
+                color: [100, 100, 100]
+              },
+              width: 30, // the width in m
+              height: 5, // the height in m
+              profileRotation: "heading"
+            }]
+          };
+
+          const roundTubeSymbol = {
+            type: "line-3d",
+            symbolLayers: [{
+              type: "path",
+              profile: "circle",
+              material: {
+                color: [100, 100, 100]
+              },
+              width: 30, // the width in m
+              height: 30 // the height in m
+            }]
+          };
+
+          const squareTubeSymbol = {
+            type: "line-3d",
+            symbolLayers: [{
+              type: "path",
+              profile: "quad",
+              material: {
+                color: [100, 100, 100]
+              },
+              width: 30, // the width in m
+              height: 30 // the height in m
+            }]
+          };
+
+          const polylineGraphic = new Graphic({
+            geometry: polyline,
+            symbol: lineSymbol
+          });
+
+          graphicsLayer.add(polylineGraphic);
+        }
+
+
+
+        document.getElementById("bt_getpath").addEventListener("click",
+          function () {
+            let URL = "{% url 'getpath' %}";
+            let data = {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    'task_notes': "nothing important now"
+                   };
+            //console.log(data);
+            $.post(URL, data, function(response){
+              let res=JSON.parse(response);
+              if(res.flag == 'success'){
+                  m_path=res.data.paths;
+                  //console.log(m_path);
+
+                  ShowPath(0);
+               }
+              else{ alert(response); }
+            });
+          });
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="editArea" class="editArea-container">
+      <h2 class="list-heading">Path planning</h2>
+      <input type="button" class="edit-button" id="bt_getpath" value="Get Path"></input>
+
+    </div>
+    <div id="viewDiv"></div>
+  </body>
+</html>

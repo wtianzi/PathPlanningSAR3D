@@ -1,0 +1,12 @@
+var m_scenarios={
+  "scenario_00":{
+    "id":1,
+    "x":-80.572567,
+    "y":37.203604,
+    "z":500,
+    "camera_float_x":0.5,
+    "camera_float_y":-0.1,
+    "camera_float_z":2000,
+  }
+  
+}
