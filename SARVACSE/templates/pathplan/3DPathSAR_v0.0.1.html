@@ -19,25 +19,31 @@
       body,
       .viewContainer {
         display: grid;
-        grid-template-columns: 400px 400px;
-        grid-template-rows: 300px;
+        grid-template-columns: 24vw 75vw;
+        grid-template-rows: 99vh;
         grid-column-gap: 5px;
       }
-
-      .itemDiv {
-      background: #ce8888;
+      .InfoDiv {
+        background: #424242;
+      }
+      .mapDiv {
+        background: #ededed;
       }
       #viewDiv2D {
         margin: 0;
         padding: 0;
         width: 100%;
-        height: 40%;
+        height: 50%;
       }
-      #viewDiv {
+      #viewDiv3D {
         padding: 0;
         margin: 0;
         width: 100%;
-        height: 60%;
+        height: 100%;
+      }
+      #editArea {
+        padding: 10px;
+        width: 275px;
       }
 
       #menu {
@@ -93,7 +99,7 @@
         const view2D = new MapView({
           container: "viewDiv2D",
           map: map2D,
-          zoom: 16,
+          zoom: 15,
           center: [-80.572567,37.18]
         });
 
@@ -104,7 +110,7 @@
           ground: "world-elevation"
         });
         const view = new SceneView({
-          container: "viewDiv",
+          container: "viewDiv3D",
           map: map,
           // camera: https://developers.arcgis.com/javascript/latest/api-reference/esri-Camera.html#heading
           camera: {
@@ -122,7 +128,7 @@
         });
         //---------------------------
         // right side bar
-        editArea = document.getElementById("editArea");
+        const editArea = document.getElementById("editArea");
         const editExpand = new Expand({
             expandIconClass: "esri-icon-edit",
             expandTooltip: "Expand Edit",
@@ -130,7 +136,7 @@
             view: view,
             content: editArea
         });
-        //view.ui.add(editExpand, "top-right");
+        view.ui.add(editExpand, "top-right");
         //--------------------------
 
         var m_path; // have data of one path
@@ -145,7 +151,13 @@
           F2: [189, 239, 133]
         };
 
-        const graphicsLayer = new GraphicsLayer();
+        const graphicsLayer = new GraphicsLayer({
+          // elevation information: https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-GraphicsLayer.html#elevationInfo
+          elevationInfo: {
+            mode: "relative-to-ground",
+            offset: 10
+          }
+        });
         map.add(graphicsLayer);
 
         function ShowPath(id=0){
@@ -166,7 +178,7 @@
           const lineSymbol = {
             type: "simple-line", // autocasts as SimpleLineSymbol()
             color: [226, 119, 40],
-            width: 14
+            width: 5
           };
 
           // 3D path example: https://developers.arcgis.com/javascript/latest/sample-code/visualization-path-3d/
@@ -247,9 +259,10 @@
               let res=JSON.parse(response);
               if(res.flag == 'success'){
                   m_path=res.data.paths;
-                  //console.log(m_path);
+                  console.log(m_path);
 
                   ShowPath(0);
+                  document.getElementById("infotitle").innerHTML = "Path loaded!";
                }
               else{ alert(response); }
             });
@@ -260,13 +273,19 @@
 
   <body>
     <div class="viewContainer">
-      <div class="itemDiv">
+      <div class="InfoDiv">
         <div id="viewDiv2D"></div>
-        <div id="viewDiv"></div>
+        <div>
+          <p>Information Display</p>
+        </div>
       </div>
-      <div class="itemDiv">
-        <p>Information</p>
+      <div class="mapDiv">
+        <div id="viewDiv3D"></div>
       </div>
+    </div>
+    <div id="editArea">
+      <h1> Path planning</h1>
+      <button id="bt_getpath" class="esri-button">Get 3D Path</button>
     </div>
   </body>
 </html>
