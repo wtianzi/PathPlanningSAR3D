@@ -1,9 +1,12 @@
 # PathPlanningSAR3D
 The web user interface for path planning recommendation in search and rescue missions. Build for study 3.
+# 01/02/2022
+1. OPTIONS
+  - Animation: https://developers.arcgis.com/javascript/latest/sample-code/sandbox/?sample=layers-imagery-afrenderer
 
 # 12/29/2021
 Steps to do:
-1. Divide into grids (considered finished)
+1. Divide into grids
   - Build the 3D view of web user interface (Try to add a 2D small map)
   - Divide the area based on the previous algorithm
   - Load heatmap models
@@ -25,6 +28,7 @@ Steps to do:
   - Organize the experiment flow: 2 task loop
 # Notes
   - The z in 3D is the height above water level
+
 # 12/22/2021
 First draft:
 based on version 1 of study 1 and 2,
