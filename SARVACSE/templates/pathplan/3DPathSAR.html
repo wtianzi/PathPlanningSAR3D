@@ -240,7 +240,10 @@
 
 
         document.getElementById("bt_getcameraposition").addEventListener("click",function(){
-          let center=[-80.5675,37.2015,100+m_step*20];
+          let t_path=[[-80.5662,37.2001,100],[-80.5662,37.202,120],[-80.5662,37.2025,150],[-80.5665,37.2025,150],[-80.5685,37.2025,150],[-80.5685,37.202,150],[-80.5685,37.2001,150]];
+          let nmax=t_path.length;
+          let center=t_path[m_step%nmax];
+          //let center=[-80.5675,37.2015,100+m_step*20];
           m_step=m_step+1;
           DisplayPoint3D(center);
           //console.log(view);
@@ -400,9 +403,22 @@
               }
             };
 
+            const dronesymbol = {
+              type: "point-3d",
+              symbolLayers: [
+                {
+                  type: "object",
+                  height: 7,
+                  resource: {
+                    href: "{% static 'resource/Dronedraft1.gltf' %}"//"./tent.glb"
+                  }
+                }
+              ]
+            };
+
             const pointGraphic = new Graphic({
               geometry: point,
-              symbol: markerSymbol
+              symbol: dronesymbol//markerSymbol
             });
             graphicsLayer3D_point.removeAll();
             graphicsLayer3D_point.add(pointGraphic);
