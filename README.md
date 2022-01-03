@@ -4,7 +4,7 @@ The web user interface for path planning recommendation in search and rescue mis
 1. OPTIONS
   - Animation: https://developers.arcgis.com/javascript/latest/sample-code/sandbox/?sample=layers-imagery-afrenderer
 
-# 12/29/2021
+# 12/29/2021 The 1st version: basic flow
 Steps to do:
 1. Divide into grids
   - Build the 3D view of web user interface (Try to add a 2D small map)
